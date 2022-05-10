@@ -1,0 +1,66 @@
+clc
+clear
+close all
+
+%% Add Subfunction
+addpath(genpath('chebfun-master'));
+addpath(genpath('subfunction'));
+
+
+%% parameters
+w = 50;
+r0 = 0.4; theta0=0; z0=0;  % source term
+r = linspace(0,1,1000); theta = 0; z1 = linspace(-1,0,1000);z1(end)=[];z2 = linspace(0,1,1000);  % observer location
+M = -0.5;
+%% Mode Generator
+m = [5];
+n = [10];
+
+[Base] = BaseJ1(m,n);
+
+beta=sqrt(1-M^2);
+Eigm_mn=(-w*M+sqrt(w^2-beta^2*Base.jmn_pm.^2))/beta^2;  % left running
+Eigp_mn=(-w*M-sqrt(w^2-beta^2*Base.jmn_pm.^2))/beta^2;  % right running
+
+
+% figure;
+% plot(real(Eigm_mn),imag(Eigm_mn),'o');
+% hold on
+% plot(real(Eigp_mn),imag(Eigp_mn),'.');
+%
+
+Omagam_mn = w - M*Eigm_mn;   %AIAA-9
+Omagap_mn = w - M*Eigp_mn;   %AIAA-9
+Qm_mn =  -(Eigm_mn+Omagam_mn*M).*(1-m.^2./Base.jmn_pm.^2);
+Qp_mn =  +(Eigp_mn+Omagap_mn*M).*(1-m.^2./Base.jmn_pm.^2);
+
+
+for km=1:length(m)
+    Gmn1(:,:,:,km)=besselj(m(km),Base.jmn_pm(:,km)*r0)...
+        ./besselj(m(km),Base.jmn_pm(:,km)).^2./(Qm_mn(:,km))...
+        .*besselj(m(km),Base.jmn_pm(:,km)*r)...
+        .*reshape(exp(-i*(Eigm_mn(:,km)*z1)),n,1,length(z1));
+    Gmn2(:,:,:,km)=besselj(m(km),Base.jmn_pm(:,km)*r0)...
+        ./besselj(m(km),Base.jmn_pm(:,km)).^2./(Qp_mn(:,km))...
+        .*besselj(m(km),Base.jmn_pm(:,km)*r)...
+        .*reshape(exp(-i*(Eigp_mn(:,km)*z2)),n,1,length(z2));
+end
+Gm1=reshape(sum(Gmn1,1),length(r),length(z1),length(m))./(-2*pi*i);       %AIAA-20
+Gm2=reshape(sum(Gmn2,1),length(r),length(z2),length(m))./(-2*pi*i);       %AIAA-20
+% Gw=Gm*exp(-1i*m*theta).';    %AIAA-20
+
+Gw1=sum(Gm1,3);
+Gw2=sum(Gm2,3);
+Gw=[Gw1 Gw2];
+
+figure;
+subplot(2,1,1)
+imagesc([z1 z2],r,real(Gw))
+axis xy;
+axis equal
+subplot(2,1,2)
+imagesc([z1 z2],r,imag(Gw))
+axis xy;
+axis equal
+
+
