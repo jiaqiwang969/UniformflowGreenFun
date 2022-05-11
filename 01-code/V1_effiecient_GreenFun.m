@@ -9,9 +9,9 @@ addpath(genpath('subfunction'));
 
 %% parameters
 w = 25;
-r0 = 0.01; theta0=0; z0=0;  % source term
-r = linspace(0,1,193); theta = 0; z1 = linspace(-1,0,197);z1(end)=[];z2 = linspace(0,1,197);  % observer location
-M = 0.0;
+r0 = 0.1; theta0=0; z0=0;  % source term
+r = linspace(0,1,200); theta = 0; z1 = linspace(-1,0,200);z1(end)=[];z2 = linspace(0,1,200);  % observer location
+M = 0.5;
 %% Mode Generator
 m = [-50:50];
 n = [50];
@@ -54,17 +54,19 @@ Gw=[Gw1 Gw2];
 
 figure;
 
-t=0:0.01:10
+t=1
 for time=1:length(t)
     subplot(2,1,1)
     imagesc([z1 z2],r,real(Gw*exp(-i*w*t(time))));
     axis xy;
     axis equal
+    colormap(hsv);
     subplot(2,1,2)
     imagesc([z1 z2],r,abs ...
         (Gw*exp(-i*w*t(time))));
     axis xy;
     axis equal
     pause(0.01) 
+    colormap(hsv);
 end
 
