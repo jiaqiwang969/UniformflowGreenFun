@@ -9,9 +9,9 @@ addpath(genpath('subfunction'));
 
 %% parameters
 w = 25;
-r0 = 0.5; theta0=0; z0=0;  % source term
+r0 = 0.01; theta0=0; z0=0;  % source term
 r = linspace(0,1,193); theta = 0; z1 = linspace(-1,0,197);z1(end)=[];z2 = linspace(0,1,197);  % observer location
-M = -0.5;
+M = 0.0;
 %% Mode Generator
 m = [-50:50];
 n = [50];
@@ -24,19 +24,14 @@ kappa_mn=sqrt(w^2-beta^2*Base.jmn_pm.^2);
 Eigm_mn=(-w*M+kappa_mn)/beta^2;  % left running
 Eigp_mn=(-w*M-kappa_mn)/beta^2;  % right running
 
-%Omagam_mn.^2-Eigm_mn.^2-Base.jmn_pm.^2
-
-
-% figure;
-% plot(real(Eigm_mn),imag(Eigm_mn),'o');
-% hold on
-% plot(real(Eigp_mn),imag(Eigp_mn),'.');
-%
 
 Omagam_mn = w - M*Eigm_mn;   %AIAA-9
 Omagap_mn = w - M*Eigp_mn;   %AIAA-9
-Qm_mn =  kappa_mn.*(1-m.^2./Base.jmn_pm.^2); %+-is ok
+Qm_mn =  kappa_mn.*(1-m.^2./Base.jmn_pm.^2); %Lowis
 Qp_mn =  kappa_mn.*(1-m.^2./Base.jmn_pm.^2);
+
+% Qm_mn =  (Eigm_mn+Omagam_mn*M).*(1-m.^2./Base.jmn_pm.^2); %Rienstra
+% Qp_mn =  (Eigm_mn+Omagam_mn*M).*(1-m.^2./Base.jmn_pm.^2);
 
 
 for km=1:length(m)
@@ -72,5 +67,4 @@ for time=1:length(t)
     axis equal
     pause(0.01) 
 end
-
 
