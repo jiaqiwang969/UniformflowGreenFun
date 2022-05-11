@@ -9,22 +9,18 @@ addpath(genpath('subfunction'));
 
 %% parameters
 w = 25;
-r0 = 0.5; theta0=0; z0=0;  % source term
-r = linspace(0,1,193); theta = 0; z1 = linspace(-1,0,197);z1(end)=[];z2 = linspace(0,1,197);  % observer location
-M = -0.5;
+r0 = 0.99; theta0=0; z0=0;  % source term
+r = linspace(0,1,192); theta = 0; z1 = linspace(-1,0,196);z1(end)=[];z2 = linspace(0,1,196);  % observer location
+M = 0.0;
 %% Mode Generator
 m = [-50:50];
-n = [50];
+n = [20];
 
 [Base] = BaseJ1(m,n);
 
 beta=sqrt(1-M^2);
-kappa_mn=sqrt(w^2-beta^2*Base.jmn_pm.^2);
-
-Eigm_mn=(-w*M+kappa_mn)/beta^2;  % left running
-Eigp_mn=(-w*M-kappa_mn)/beta^2;  % right running
-
-%Omagam_mn.^2-Eigm_mn.^2-Base.jmn_pm.^2
+Eigm_mn=(-w*M+sqrt(w^2-beta^2*Base.jmn_pm.^2))/beta^2;  % left running
+Eigp_mn=(-w*M-sqrt(w^2-beta^2*Base.jmn_pm.^2))/beta^2;  % right running
 
 
 % figure;
@@ -35,8 +31,8 @@ Eigp_mn=(-w*M-kappa_mn)/beta^2;  % right running
 
 Omagam_mn = w - M*Eigm_mn;   %AIAA-9
 Omagap_mn = w - M*Eigp_mn;   %AIAA-9
-Qm_mn =  kappa_mn.*(1-m.^2./Base.jmn_pm.^2); %+-is ok
-Qp_mn =  kappa_mn.*(1-m.^2./Base.jmn_pm.^2);
+Qm_mn =  -(Eigm_mn+Omagam_mn*M).*(1-m.^2./Base.jmn_pm.^2);
+Qp_mn =  +(Eigp_mn+Omagap_mn*M).*(1-m.^2./Base.jmn_pm.^2);
 
 
 for km=1:length(m)
@@ -59,15 +55,14 @@ Gw=[Gw1 Gw2];
 
 figure;
 
-t=0:0.01:10
+t=0
 for time=1:length(t)
     subplot(2,1,1)
     imagesc([z1 z2],r,real(Gw*exp(-i*w*t(time))));
     axis xy;
     axis equal
     subplot(2,1,2)
-    imagesc([z1 z2],r,abs ...
-        (Gw*exp(-i*w*t(time))));
+    imagesc([z1 z2],r,imag(Gw*exp(-i*w*t(time))));
     axis xy;
     axis equal
     pause(0.01) 
