@@ -9,9 +9,6 @@ addpath(genpath('subfunction'));
 
 
 
-
-
-
 %% parameters
 f=6000;
 w = f*2*pi/343*0.3;
