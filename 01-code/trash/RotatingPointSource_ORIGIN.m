@@ -4,12 +4,12 @@ clc;
 clear all
 tic
 %% parameters
-r0 = 0.5; %rotating radius
+r0 = 0.8; %rotating radius
 omegar = 50*pi; %rotating angular speed
 omega0 = 10;
 % observer location
-        rr= linspace(0.001,1,10);
-        thetar = linspace(0,2*pi,50);
+        rr= linspace(0.001,1,31);
+        thetar = linspace(0,2*pi,200);
 
 for k1=1:length(rr)
     for k2=1:length(thetar)
@@ -53,7 +53,9 @@ for k1=1:length(rr)
             kapa = -i*sqrt(-omegam^2+alpha.^2); %right-running modes
 
             Q = kapa.*(1-(m./alpha).^2);
-            pp_miu = besselj(m,alpha*r0).*besselj(m,alpha*r)./alpha./Q./besselj(m,alpha).^2.*exp(-1i*kapa*xo);
+            pp_miu = besselj(m,alpha*r0).*besselj(m,alpha*r)./Q./besselj(m,alpha).^2.*exp(-1i*kapa*xo);
+
+
 
             pp_m = sum(pp_miu)*exp(-1i*m*theta);
 
@@ -74,11 +76,11 @@ end
 
 
 figure
-for time=1:1000
-    offset=0.05; cont=22; % contour setting
-    s1=subplot(1,2,1); contour(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
+for time=1:1
+    offset=0.05; cont=2; % contour setting
+    s1=subplot(1,2,1); contourf(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
     axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
-    s2=subplot(1,2,2); contour(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
+    s2=subplot(1,2,2); contourf(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
     axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);
 % sgtitle(['Duct Mode-m',num2str(m),'-n',num2str(n)], 'FontSize', 30)
    pause(0.01) %in seconds

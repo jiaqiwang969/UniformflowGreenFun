@@ -8,7 +8,7 @@ addpath(genpath('subfunction'));
 
 
 %%
-load('database/mics_loc.mat')
+load('../database/ShiChunDuctData/mics_loc.mat')
 mics_x=mics_loc(:,1).*cos(mics_loc(:,2));
 mics_y=mics_loc(:,1).*sin(mics_loc(:,2));
 mics_z=mics_loc(:,3);

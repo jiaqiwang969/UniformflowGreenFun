@@ -12,8 +12,8 @@ addpath(genpath('subfunction'));
 %% parameters
 f=6000;
 w = f*2*pi/343*0.3;
-r0 = 0.1; theta0=0; z0=0;  % source term
-r = linspace(0,1,200); theta = 0; z1 = linspace(-1,0,200);z1(end)=[];z2 = linspace(0,1,200);  % observer location
+r0 = 0.8; theta0=0; z0=0;  % source term
+r = linspace(0,1,100); theta = linspace(0,2*pi,90); z1 = linspace(-1,0,100);z1(end)=[];z2 = linspace(0,1,100);  % observer location
 M = 0;
 %% Mode Generator
 m = [-50:50];
@@ -49,25 +49,33 @@ for km=1:length(m)
 end
 Gm1=reshape(sum(Gmn1,1),length(r),length(z1),length(m))./(-2*pi*i);       %AIAA-20
 Gm2=reshape(sum(Gmn2,1),length(r),length(z2),length(m))./(-2*pi*i);       %AIAA-20
-% Gw=Gm*exp(-1i*m*theta).';    %AIAA-20
+tem1=exp(-1i*m.'*(theta-theta0));
+tem2=exp(-1i*m.'*(theta-theta0));
 
-Gw1=sum(Gm1,3);
-Gw2=sum(Gm2,3);
+Gw1=reshape(sum(bsxfun(@times,Gm1,reshape(tem1,1,1,length(m),length(theta))),3),length(r),length(z1),length(theta));
+Gw2=reshape(sum(bsxfun(@times,Gm2,reshape(tem2,1,1,length(m),length(theta))),3),length(r),length(z2),length(theta));
+
 Gw=[Gw1 Gw2];
 
-figure;
 
-t=0:0.01:10
+
+[Theta,Rho]=meshgrid(theta,r);
+[yy,xx]=pol2cart(Theta,Rho);
+t=0:0.01:10;
+figure
 for time=1:length(t)
-    subplot(2,1,1)
-    imagesc([z1 z2],r,real(Gw*exp(-i*w*t(time))));
-    axis xy;
-    axis equal
-    subplot(2,1,2)
-    imagesc([z1 z2],r,abs ...
-        (Gw*exp(-i*w*t(time))));
-    axis xy;
-    axis equal
-    pause(0.01) 
+    offset=0.05; cont=22; % contour setting
+    s1=subplot(2,2,1); contour(xx,yy,reshape(real(Gw(:,length(z1),:)*exp(-i*w*t(time))),size(xx)),cont); ...
+    axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
+    s2=subplot(2,2,2); contour(xx,yy,reshape(imag(Gw(:,length(z1),:)*exp(-i*w*t(time))),size(xx)),cont); ...
+    axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);
+    subplot(2,2,3);imagesc([z1 z2],r,real(Gw(:,:,1)*exp(-i*w*t(time))));
+    axis('square'); axis xy;axis equal;xlabel(''); ylabel('real', 'FontSize', 20);ylim([0 1]);
+    subplot(2,2,4);imagesc([z1 z2],r,imag(Gw(:,:,1)*exp(-i*w*t(time)))); 
+    axis('square'); axis xy;axis equal;xlabel(''); ylabel('imag', 'FontSize', 20);ylim([0 1]);
+    pause(0.01) %in seconds
 end
+
+
+
 
