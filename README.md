@@ -1,7 +1,7 @@
 # UniformflowGreenFun
 - Aim: reproduce the green function of uniform flow duct in Riestra-AIAA-2008 paper
 
-- Acknowledge：ZH Wang
+- Acknowledge：ZH Wang (Origin code!)
 
 
 - V1_effiecient_monopole.m: Plot in Z=0, & theta=0, momopole at r0=0.8, static source 
