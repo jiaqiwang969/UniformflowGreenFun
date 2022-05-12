@@ -1,20 +1,22 @@
-format long
-format compact
 clc;
 clear all
 tic
+
+
 %% parameters
 r0 = 0.8; %rotating radius
-omegar = 50*pi; %rotating angular speed
+omegar = 1; %rotating angular speed
 omega0 = 10;
 % observer location
 rr= linspace(0.001,1,31);
 thetar = linspace(0,2*pi,100);
+xor =  linspace(0,1,50);
 
-for k1=1:length(rr)
+
+for k1=1:length(xor)
     for k2=1:length(thetar)
-        xo = 0.5;
-        r = rr(k1);%0.8;
+        xo = xor(k1);
+        r = rr(end);%0.8;
         theta = thetar(k2);%pi/2;
 
         %% generate the retarded time steps
@@ -26,7 +28,7 @@ for k1=1:length(rr)
         %% observer time step, iteration over m, miu
         t = zeros(1,10*N);
         mm = [-30:30];
-        Miu = [1:1:10];
+        Miu = [10];
 
         NT = length(t);
         NM = length(mm);
@@ -40,11 +42,11 @@ for k1=1:length(rr)
         Xo_2 = r*cos(theta);   %observer position at t
         Xo_3 = r*sin(theta);
 
-        t=tau+sqrt((Xo_1-Xs_1).^2 + (Xo_2-Xs_2).^2 + (Xo_3-Xs_3).^2);    % the observer time;
 
         %% calculation
         for m1=1:NM
-
+            t=tau+sqrt((Xo_1-Xs_1).^2 + (Xo_2-Xs_2).^2 + (Xo_3-Xs_3).^2);    % the observer time;
+            
             m = mm(m1);
             omegam = omega0 + m*omegar;
             alpha0 = 1/2*(Miu+1/2*m-3/4)*pi+1/2*sqrt((Miu+1/2*m-3/4).^2*pi^2-2*m^2+1/2);
@@ -65,17 +67,17 @@ end
 
 
 
-[Theta,Rho]=meshgrid(thetar,rr);
-[yy,xx]=pol2cart(Theta,Rho);
+[yy,xx]=meshgrid(thetar,xor);
+%[yy,xx]=pol2cart(Theta,Rho);
 
 
 figure
-for time=1:1
-    offset=0.05; cont=2; % contour setting
-    s1=subplot(1,2,1); contourf(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
-        axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
-    s2=subplot(1,2,2); contourf(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
-        axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);
+for time=1:4000
+    offset=0.05; cont=22; % contour setting
+    s1=subplot(1,2,1); contour(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
+        axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);caxis([-0.04 0.08])
+    s2=subplot(1,2,2); contour(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
+        axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);caxis([-0.04 0.08])
     % sgtitle(['Duct Mode-m',num2str(m),'-n',num2str(n)], 'FontSize', 30)
     pause(0.01) %in seconds
 
@@ -83,8 +85,15 @@ end
 toc
 
 
+figure
+offset=0.05; cont=22; % contour setting
+s1=subplot(1,4,1); contour(xx,yy,reshape(real(p(1,:,:)),size(xx)),cont); ...
+    axis('square');  xlabel('T=0', 'FontSize', 20);caxis([-0.04 0.08]);title('z');
 
-
-
-
-
+ylabel('m=[-30,30],n=[1:10]', 'FontSize', 20);
+s2=subplot(1,4,2); contour(xx,yy,reshape(real(p(26,:,:)),size(xx)),cont);title('z');ylabel('\theta'); ...
+    axis('square');  xlabel('T=\pi/2', 'FontSize', 20);caxis([-0.04 0.08]);
+s1=subplot(1,4,3); contour(xx,yy,reshape(real(p(26+25,:,:)),size(xx)),cont); title('z');ylabel('\theta'); ...
+    axis('square');  xlabel('T=\pi', 'FontSize', 20);caxis([-0.04 0.08]);
+s2=subplot(1,4,4); contour(xx,yy,reshape(real(p(26+25+25,:,:)),size(xx)),cont);title('z');ylabel('\theta');  ...
+    axis('square');  xlabel('T=3/2\pi', 'FontSize', 20);caxis([-0.04 0.08])

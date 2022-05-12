@@ -4,12 +4,12 @@ clc;
 clear all
 tic
 %% parameters
-r0 = 0.8; %rotating radius
+r0 = 0.1; %rotating radius
 omegar = 50*pi; %rotating angular speed
 omega0 = 10;
 % observer location
-rr= linspace(0.001,1,31);
-thetar = linspace(0,2*pi,100);
+        rr= linspace(0.001,1,10);
+        thetar = linspace(0,2*pi,50);
 
 for k1=1:length(rr)
     for k2=1:length(thetar)
@@ -47,13 +47,17 @@ for k1=1:length(rr)
 
             m = mm(m1);
             omegam = omega0 + m*omegar;
+
             alpha0 = 1/2*(Miu+1/2*m-3/4)*pi+1/2*sqrt((Miu+1/2*m-3/4).^2*pi^2-2*m^2+1/2);
             alpha = fsolve(@(alpha)(besselj(m-1,alpha)-besselj(m+1,alpha))/2,alpha0,optimoptions('fsolve','Display','off'));
-            kapa = -i*sqrt(-omegam^2+alpha.^2); %right-running modes
+            kapa = sqrt(omegam^2-alpha.^2); %right-running modes
 
             Q = kapa.*(1-(m./alpha).^2);
-            pp_miu = besselj(m,alpha*r0).*besselj(m,alpha*r)./Q./besselj(m,alpha).^2.*exp(-1i*kapa*xo);
+            pp_miu = besselj(m,alpha*r0).*besselj(m,alpha*r)./alpha./Q./besselj(m,alpha).^2.*exp(-1i*kapa*xo);
+
             pp_m = sum(pp_miu)*exp(-1i*m*theta);
+
+
             pp(m1,:) = 1i*exp(1i*(omega0+m*omegar)*t)* pp_m;
         end
 
@@ -70,15 +74,15 @@ end
 
 
 figure
-for time=1:1
-    offset=0.05; cont=2; % contour setting
-    s1=subplot(1,2,1); contourf(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
-        axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
-    s2=subplot(1,2,2); contourf(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
-        axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);
-    % sgtitle(['Duct Mode-m',num2str(m),'-n',num2str(n)], 'FontSize', 30)
-    pause(0.01) %in seconds
-
+for time=1:1000
+    offset=0.05; cont=22; % contour setting
+    s1=subplot(1,2,1); contour(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
+    axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
+    s2=subplot(1,2,2); contour(xx,yy,reshape(imag(p(time,:,:)),size(xx)),cont); ...
+    axis('square'); xlabel(''); ylabel('imag', 'FontSize', 20);
+% sgtitle(['Duct Mode-m',num2str(m),'-n',num2str(n)], 'FontSize', 30)
+   pause(0.01) %in seconds
+ 
 end
 toc
 
