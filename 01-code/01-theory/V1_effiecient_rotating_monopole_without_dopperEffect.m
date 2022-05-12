@@ -1,6 +1,7 @@
 clc
 clear
 close all
+%MAY BE HAVE BUG YET!!
 
 %% Add Subfunction
 addpath(genpath('chebfun-master'));
