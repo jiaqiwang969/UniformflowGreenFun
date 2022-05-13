@@ -21,7 +21,7 @@ for k1=1:length(rr)
 
         %% observer time step, iteration over m, miu
         t = zeros(1,10*N);
-        mm = [15];
+        mm = [29];
         Miu = [1];
 
         NT = length(t);
@@ -62,7 +62,7 @@ end
 
 
 figure
-for time=1:4
+for time=1:400
     offset=0.05; cont=22; % contour setting
     s1=subplot(1,2,1); contour(xx,yy,reshape(real(p(time,:,:)),size(xx)),cont); ...
         axis('square'); xlabel(''); ylabel('real', 'FontSize', 20);
